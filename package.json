@@ -1,0 +1,34 @@
+{
+  "name": "hgreenkeeper",
+  "version": "0.0.1",
+  "description": "Keeps npm packages up to date for your Mercurial repo",
+  "main": "index.js",
+  "bin": {
+    "hgreenkeeper": "src/cli.js"
+  },
+  "dependencies": {
+    "@slack/client": "3.8.1",
+    "body-parser": "1.16.0",
+    "commander": "2.9.0",
+    "deep-extend": "0.4.1",
+    "express": "4.14.0",
+    "figlet": "1.2.0",
+    "hg": "0.2.0",
+    "npm": "4.1.0",
+    "winston": "2.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "1.10.0"
+  },
+  "scripts": {
+    "start": "nodemon ./src/cli.js -- --verbose serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mercurial",
+    "updates",
+    "dependencies"
+  ],
+  "author": "Elwyn Benson",
+  "license": "ISC"
+}
