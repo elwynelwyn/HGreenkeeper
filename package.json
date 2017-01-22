@@ -1,6 +1,6 @@
 {
   "name": "hgreenkeeper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Keeps npm packages up to date for your Mercurial repo",
   "main": "index.js",
   "bin": {
