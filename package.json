@@ -30,5 +30,9 @@
     "dependencies"
   ],
   "author": "Elwyn Benson",
-  "license": "GNU GPLv3"
+  "license": "GNU GPLv3",
+  "repository": {
+    "type": "git",
+	"url": "https://github.com/elwynelwyn/HGreenkeeper.git"
+  }
 }
