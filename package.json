@@ -1,6 +1,6 @@
 {
   "name": "hgreenkeeper",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Keeps npm packages up to date for your Mercurial repo",
   "main": "index.js",
   "bin": {
@@ -30,5 +30,5 @@
     "dependencies"
   ],
   "author": "Elwyn Benson",
-  "license": "ISC"
+  "license": "GNU GPLv3"
 }
