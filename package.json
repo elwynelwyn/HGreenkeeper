@@ -38,7 +38,7 @@
   },
   "scripts": {
     "start": "nodemon ./src/cli.js -- --verbose serve",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublish": "ng build --prod"
   },
   "keywords": [
     "mercurial",
