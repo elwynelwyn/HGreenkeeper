@@ -1,7 +1,9 @@
 'use strict';
 const DEFAULT_CONFIG_FILE_NAME = 'hgreenkeeper.config.js';
+const DEFAULT_PENDING_FILE_NAME = 'hgreenkeeper.pending.json';
 module.exports = {
     loadConfig,
+    writeConfig,
     getConfig,
     DEFAULT_CONFIG_FILE_NAME
 };
@@ -16,6 +18,7 @@ const projectUtils = require('../project');
 const CWD = process.cwd();
 
 let CONFIG;
+let CONFIG_PATH;
 function getConfig () {
     if (!CONFIG) {
         throw new Error(`Tried to access CONFIG before it has been loaded.`);
@@ -23,7 +26,24 @@ function getConfig () {
     return CONFIG;
 }
 
+function writeConfig (config) {
+    winston.verbose(`Writing config file to disk at ${CONFIG_PATH}`);
+    return new Promise((resolve, reject) => {
+        let configAsString = JSON.stringify(config, null, 4);
+        fs.writeFile(CONFIG_PATH, configAsString, err => {
+            if (err) {
+                reject(`Failed to write to the config file at ${CONFIG_PATH}.\n${err}`);
+                return;
+            }
+            winston.verbose(`Config file was successfully written to ${CONFIG_PATH}`);
+            resolve();
+        })
+    });
+}
+
 function loadConfig (configPath) {
+    CONFIG_PATH = configPath || path.resolve(CWD, DEFAULT_CONFIG_FILE_NAME);
+
     let getConfigPromise = configPath
         ? loadConfigFromUserSpecifiedPath(configPath)
         : loadConfigFromDefaultConfigLocation();
@@ -59,11 +79,20 @@ function loadConfigFromDefaultConfigLocation () {
         let fullConfigPath = path.resolve(CWD, DEFAULT_CONFIG_FILE_NAME);
         fs.stat(fullConfigPath, (err, stats) => {
             if (err || !stats) {
-                // No default config file found - that's OK, we can carry on and run with our defaults
-                resolve();
-                return;
-            }
-            if (stats.isFile()) {
+                // No default config file found - that's OK, we can carry on and write a file with our defaults
+                winston.verbose(`No config file found at default location, writing a new default config file.`);
+                ensureConfigDefaultsAreSet({})
+                    .then(defaultConfig => {
+                        fs.writeFile(fullConfigPath, defaultConfig, err => {
+                            if (err) {
+                                reject(`No config file was found, and a default config file could not be written to disk at ${fullConfigPath}.\n`, err);
+                                return;
+                            }
+                            winston.verbose(`Default config file has been written to ${fullConfigPath}.`);
+                            resolve(defaultConfig);
+                        });
+                    });
+            } else if (stats.isFile()) {
                 try {
                     let userConfig = require(fullConfigPath);
                     resolve(userConfig);
@@ -91,7 +120,8 @@ function ensureConfigDefaultsAreSet (userConfig = {}) {
                 },
                 onBranchCreated: true,
                 onUncommittedChanges: true
-            }
+            },
+            pendingUpdatesPath: path.join(CWD, DEFAULT_PENDING_FILE_NAME)
         };
 
         let config = deepExtend(defaultConfig, userConfig);

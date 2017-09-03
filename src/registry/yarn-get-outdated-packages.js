@@ -6,10 +6,13 @@ const winston = require('winston');
 
 function getOutdatedInfoWithYarn (repoPath) {
     return new Promise((resolve, reject) => {
+        winston.verbose(`Spawning child process in ${repoPath}: yarn outdated --json`);
         const child = child_process.exec('yarn outdated --json', { cwd: repoPath });
+
         let response;
         let outdatedLockfile = false;
         child.stdout.on('data', (data) => {
+            winston.verbose(`Child process stdout got data`);
             let json;
             try {
                 json = JSON.parse(data);
@@ -27,6 +30,7 @@ function getOutdatedInfoWithYarn (repoPath) {
             }
         });
         child.stderr.on('data', (data) => {
+            winston.verbose(`Child process stderr got data`);
             let json;
             try {
                 json = JSON.parse(data);
@@ -44,8 +48,9 @@ function getOutdatedInfoWithYarn (repoPath) {
                 winston.error('[yarn outdated] '+ data);
             }
         });
-        child.on('close', function (exitCode) {
-            if (exitCode === 0) {
+        child.on('exit', function (exitCode) {
+            winston.verbose(`Child process exited`);
+            if (response) {
                 resolve(parseYarnOutput(response));
             } else {
                 reject(`Failed while getting outdated packages statuses. ${outdatedLockfile ? 'Outdated lockfile. ' : ''}Exit code ${exitCode}`);

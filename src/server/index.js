@@ -14,6 +14,7 @@ const config = require('../config');
 const checker = require('../checker');
 const utils = require('../utils');
 const hg = require('../hg');
+const pending = require('../pending');
 
 // mock TC webhook POST for testing purposes
 let dummyTeamCityWebhook;
@@ -34,6 +35,20 @@ function startServer () {
         };
         onBuildStatusReport(buildStatus);
         response.send('ok');
+    });
+
+    app.get('/pending.json', (request, response) => {
+        winston.verbose(`Request for pending.json`);
+        pending.getPending()
+            .then(pending => {
+                response.type('json');
+                response.send(pending);
+            })
+            .catch(err => {
+                response.status(500, {
+                    error: err
+                });
+            });
     });
 
     app.listen(CONFIG.port, () => {

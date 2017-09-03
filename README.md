@@ -1,4 +1,4 @@
-#HGreenkeeper
+# HGreenkeeper
 Helps you keep npm dependencies up to date in your Mercurial / hg repository
 
 ```
@@ -6,12 +6,12 @@ npm install hgreenkeeper -g
 hgreenkeeper --help
 ```
 
-##How it works
+## How it works
 HGreenkeeper runs a small server. This looks at your repo for a `package.json`, and periodically runs `npm outdated` to see if you have any dependencies that are not at latest.
 
 When it finds a dependency that is out of date, it creates a branch, updates the version number in `package.json`, and pushes it.
 
-##Recommended setup
+## Recommended setup
 HGreenkeeper runs commands on your repository. As such, I'd suggest you have separate clones of your repo(s) which HGreenkeeper can run against.
 
 First, install HGreenkeeper globally:
@@ -56,12 +56,12 @@ The server also provides a web-console to provide you with HGreenkeeper status.
 
 Use a tool like [forever](https://github.com/foreverjs/forever) or [pm2](https://github.com/Unitech/pm2) to keep this process alive.
 
-###Authentication
+### Authentication
 Unfortunately you cannot (yet?) easily setup authentication (e.g. for Mercurial) with HGreenkeeper. It just runs commands and expects to already be logged in - so commits will show up as the currently authenticated Mercurial user.
 
-##Config
+## Config
 
-By default HGreenkeeper looks inside the directory you tun it in for a file names `hgreenkeeper.config.js`.
+By default HGreenkeeper looks inside the directory you run it in for a file names `hgreenkeeper.config.js`.
 
 You can alternatively use `--config ../path/to/your/config.js`.
 
@@ -115,7 +115,13 @@ module.exports = {
         
         // Notify when HGreenkeeper finds the repo with uncommitted changes, which prevents it from running.
         onUncommittedChanges: true
-    }
+    },
+    
+    // optional path for the JSON file that tracks pending updates
+    pendingUpdatespath: './hgreenkeeper.pending.json',    
+    
+    // optional issue tracker integration. See notes below
+    issueTracker: './hgreenkeeper.jira.js'
 }
 ```
 
@@ -123,7 +129,11 @@ HGreenkeeper can be run with the `--verbose` flag to provide lots of logging.
 
 Alternatively, you can use `--silent` to suppress all output (even errors!);
 
-##FAQ
+## Issue tracker integration
+
+TODO write docs for this
+
+## FAQ
 
 *Hypothetical FAQs, no one has actually asked questions yet...*
 
@@ -147,7 +157,7 @@ Yes, it tries to detect if `yarn` is available on your path, and if so runs all 
 
 If it sees a `yarn.lock` file it will also run a `yarn` install after bumping your `package.json` versions so that the lock file is up to date.
 
-##Future plans
+## Future plans
 Better notifications
 
 CI integration (first up, TeamCity)

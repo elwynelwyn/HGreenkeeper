@@ -12,6 +12,7 @@ const projectUtils = require('../project');
 const runCheck = require('../registry');
 const runYarnInstall = require('../registry/run-yarn-install');
 const utils = require('../utils');
+const pending = require('../pending');
 
 function runOutdatedCheckerForProject (project) {
     winston.info(`Running outdated check for project "${project.name}".`);
@@ -48,9 +49,8 @@ function runOutdatedCheckerForProject (project) {
                     handleOutdatedYarnLockFile(project)
                         .then(resolve)
                         .catch(reject);
-                }
-                else {
-                    throw err;
+                } else {
+                    reject(err);
                 }
             });
     });
@@ -104,6 +104,7 @@ function handleOutdatedPackageThatDoesNotYetHaveABranch (project, branchName, ou
             return hg.commitChanges(project.fullPath, commitMessage);
         })
         .then(() => hg.updateToDefault(project.fullPath))
+        .then(() => pending.addBranch(project, branchName, outdatedPackage))
         .then(() => {
             notifications.onBranchCreated(project, outdatedPackage, branchName);
             // return true flag to specify this repo needs to be pushed
